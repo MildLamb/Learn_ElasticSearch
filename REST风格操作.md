@@ -162,7 +162,7 @@ POST /mildlamb/_update/2
 ```JavaScript
 GET /mildlamb/_doc/2
 ```
-- 简单的条件查询 _search 查询，q query，name 为 kindred
+- 简单的条件查询 _search 查询，q query，name 为 kindred,查询会走ik分词器
 ```JavaScript
 GET mildlamb/_search?q=name:kindred
 ```
