@@ -12,6 +12,21 @@ IK提供了两个分词算法:∶ ik_smart和ik_max_word，其中 ik_smart为最
 - 使用kibana进行测试
 
 ### 查看不同的分词器效果
+
+```JavaScript
+GET _analyze
+{
+  "analyzer": "ik_smart",
+  "text": "kindred千珏"
+}
+
+GET _analyze
+{
+  "analyzer": "ik_max_word",
+  "text": "kindred千珏"
+}
+```
+
 - ik_smart为最少切分
 ![image](https://user-images.githubusercontent.com/92672384/146117543-83d5a801-1e7a-47cc-9feb-a77f95994a89.png)
 
