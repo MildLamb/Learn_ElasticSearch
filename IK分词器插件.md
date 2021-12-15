@@ -45,3 +45,6 @@ xpack.security.encryptionKey: "something_at_least_32_characters"
 # 设置多次重启和kibana的多个实例之间保留相同的密钥
 xpack.reporting.encryptionKey: "something_at_least_32_characters"
 ```
+
+# ik分词器type类型
+![9V06N$)PBP($1T7~7$TK`LN](https://user-images.githubusercontent.com/92672384/146124070-69544048-6807-489d-9daf-f5970e9b3175.png)
