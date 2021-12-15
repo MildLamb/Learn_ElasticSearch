@@ -9,6 +9,7 @@
 |  POST    | localhost:9200/索引名称/类型名称/_search   |  查询所有数据    |
 
 # 命令实操
+## 关于索引的基本操作
 ### 创建文档
 1. 先进入kibana的开发工具页面
 2. 输入命令 PUT /索引名称/类型名称/文档id
@@ -100,7 +101,7 @@ GET test2
 
 ### 修改索引
 - 方法一：直接对原来的数据进行覆盖的修改，重复命令，改变数据即可
-- 方法二：POST  _update 更新
+- 方法二：POST  /{index}/_update/{docID} 更新
 ```JavaScript
 POST /test3/_update/1
 {
@@ -110,8 +111,58 @@ POST /test3/_update/1
 }
 ```
 
-### 删除索引
+### 删除索引,根据你的路径决定是删除索引还是删除文档
 - DELETE 索引名称
 ```JavaScript
 DELETE test2
+```
+
+## 关于文档的基本操作(重点)
+### 基本操作
+- 创建数据
+```JavaScript
+PUT /mildlamb/_doc/1
+{
+  "name": "kindred",
+  "age": 1600,
+  "desc": "死亡之灵",
+  "tags": ["温柔","灵魂的指路人"]
+}
+
+PUT /mildlamb/_doc/2
+{
+  "name": "gnar",
+  "age": 9,
+  "desc": "冰封千年的猛兽",
+  "tags": ["亢奋","暴怒","可爱"]
+}
+
+PUT /mildlamb/_doc/3
+{
+  "name": "neeko",
+  "age": 16,
+  "desc": "捣蛋变色龙",
+  "tags": ["好奇宝宝","捣蛋鬼","骗术大师"]
+}
+```
+- 获取数据
+```JavaScript
+GET /mildlamb/_doc/1
+```
+- 更新数据
+```JavaScript
+POST /mildlamb/_update/2
+{
+  "doc": {
+    "name": "gnardada"
+  }
+}
+```
+- 简单的查询
+```JavaScript
+GET /mildlamb/_doc/2
+```
+- 简单的条件查询 _search 查询，q query，name 为 kindred
+```JavaScript
+GET mildlamb/_search?q=name:kindred
 ```
