@@ -10,7 +10,7 @@ IK提供了两个分词算法:∶ ik_smart和ik_max_word，其中 ik_smart为最
 - 重启ES观察
 - elasticsearch-plugin list ，可以通过这个命令来查看加载进来的插件
 - 使用kibana进行测试
-- 
+
 ### 查看不同的分词器效果
 - ik_smart为最少切分
 ![image](https://user-images.githubusercontent.com/92672384/146117543-83d5a801-1e7a-47cc-9feb-a77f95994a89.png)
@@ -18,6 +18,15 @@ IK提供了两个分词算法:∶ ik_smart和ik_max_word，其中 ik_smart为最
 - ik_max_word为最细粒度划分
 ![image](https://user-images.githubusercontent.com/92672384/146117588-1fc7623e-3c9b-415c-bceb-70167aa31285.png)
 
+## 如何将自己想要的一些词添加到分词器字典中呢？
+- 进入ik分词器的config目录中(在ES的plugins里面)
+- 新建一个自己的词典，把你想要的词写进去(我新建的字典文件名为mildlamb.dic)
+- 在ik分词器的配置文件IKAnalyzer.cfg.xml中的如下字段中添加刚刚编写的配置字典
+```xml
+<!--用户可以在这里配置自己的扩展字典 -->
+<entry key="ext_dict">mildlamb.dic</entry>
+```
+- 重启ES，测试
 
 
 
