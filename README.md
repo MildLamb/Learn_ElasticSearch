@@ -41,3 +41,10 @@ ELK，是ElasticSearch，Logstash，Kibana三大开源框架首字母大写简�
 实际上ELK不仅仅适用于日志分析，它还可以支持其他任何数据分析和收集的场景，日志分析和收集只是更具代表性。并非唯一性。
 
 ![image](https://user-images.githubusercontent.com/92672384/145927541-96ec84b9-9985-42f7-9061-75d3779a9d88.png)
+
+# 可视化界面Kibana安装
+- 下载并解压kibana
+- 进入bin目录，运行kibana.bat(ES需要是运行的状态)
+- 访问测试 http://localhost:5601
+- 如果想使用中文界面，修改config/kibana.yml，添加
+  - i18n.locale: "zh-CN"
