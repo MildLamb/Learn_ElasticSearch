@@ -166,3 +166,4 @@ GET /mildlamb/_doc/2
 ```JavaScript
 GET mildlamb/_search?q=name:kindred
 ```
+- 查询结果的"_score"越高，匹配度就越高
