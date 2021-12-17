@@ -171,8 +171,11 @@ public class User {
 	//删除文档
 	@Test
 	void testDelDocument() throws IOException {
+		// 设置删除哪个文档
 		DeleteRequest request = new DeleteRequest("mildlamb_index", "1");
 		request.timeout("2s");
+		
+		// 执行删除操作
 		DeleteResponse delete = client.delete(request, RequestOptions.DEFAULT);
 		System.out.println(delete.status());
 		client.close();
