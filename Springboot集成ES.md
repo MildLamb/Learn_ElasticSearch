@@ -29,7 +29,7 @@ public class ESConfig {
 }
 ```
 
-## 索引api
+# 索引操作的API
 - 创建索引
 - 判断是否存在索引
 - 获取索引
