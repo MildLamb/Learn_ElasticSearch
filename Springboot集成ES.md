@@ -96,4 +96,85 @@ public class User {
     private int age;
 }
 ```
-- 
+- 以下操作都是调用客户端对象的方法完成
+	- 添加文档(index)
+	- 判断文档是否存在(exists)
+	- 获取文档内容(get)
+	- 更新文档内容(update)
+	- 删除文档(delete)
+
+```java
+//--------------------------------------------
+	// 测试添加文档
+	@Test
+	void testAddDocument() throws IOException {
+		// 创建对象
+		User user = new User("kindred", 1500);
+		// 创建请求
+		IndexRequest request = new IndexRequest("mildlamb_index");
+
+		// 设置规则  PUT mildlamb_index/_doc/1
+		// 可以使用链式编程
+		request.id("1").timeout(TimeValue.timeValueSeconds(2));
+
+		// 将我们的数据放入请求  json
+		request.source(new ObjectMapper().writeValueAsString(user), XContentType.JSON);
+
+		// 客户端发送请求,获取响应的结果
+		IndexResponse indexResponse = client.index(request, RequestOptions.DEFAULT);
+		System.out.println(indexResponse.toString());
+		client.close();
+	}
+
+	//获取文档，判断是否存在 get /index/_doc/1
+	@Test
+	void testExistsDocument() throws IOException {
+		GetRequest mildlamb_index = new GetRequest("mildlamb_index", "1");
+		// 获取返回的 _source 上下文
+		mildlamb_index.fetchSourceContext(new FetchSourceContext(true));
+		boolean exists = client.exists(mildlamb_index, RequestOptions.DEFAULT);
+		System.out.println(exists);
+		System.out.println("\n" + mildlamb_index);
+		client.close();
+	}
+
+	// 获取文档的信息
+	@Test
+	void testGetDocument() throws IOException {
+		GetRequest mildlamb_index = new GetRequest("mildlamb", "2");
+		GetResponse getResponse = client.get(mildlamb_index, RequestOptions.DEFAULT);
+		//打印文档的内容
+//		System.out.println(getResponse.getSource());
+//		System.out.println(getResponse.getSourceAsString());
+		System.out.println(getResponse.getSourceAsMap());
+
+		System.out.println(getResponse);
+		client.close();
+	}
+
+	// 更新文档
+	@Test
+	void testUpdateDocument() throws IOException {
+		// 设置要更新哪个文档
+		UpdateRequest mildlamb_index = new UpdateRequest("mildlamb_index", "1");
+
+		// 更新的内容
+		User user = new User("温柔小羊", 1600);
+		mildlamb_index.doc(new ObjectMapper().writeValueAsString(user),XContentType.JSON);
+
+		// 客户端执行更新操作
+		UpdateResponse update = client.update(mildlamb_index, RequestOptions.DEFAULT);
+		System.out.println(update);
+		client.close();
+	}
+
+	//删除文档
+	@Test
+	void testDelDocument() throws IOException {
+		DeleteRequest request = new DeleteRequest("mildlamb_index", "1");
+		request.timeout("2s");
+		DeleteResponse delete = client.delete(request, RequestOptions.DEFAULT);
+		System.out.println(delete.status());
+		client.close();
+	}
+```
