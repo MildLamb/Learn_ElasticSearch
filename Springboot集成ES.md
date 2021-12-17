@@ -102,6 +102,8 @@ public class User {
 	- 获取文档内容(get)
 	- 更新文档内容(update)
 	- 删除文档(delete)
+	- 批量插入和更新内容(bulk)
+	- 搜索(search)
 
 ```java
 //--------------------------------------------
@@ -178,6 +180,70 @@ public class User {
 		// 执行删除操作
 		DeleteResponse delete = client.delete(request, RequestOptions.DEFAULT);
 		System.out.println(delete.status());
+		client.close();
+	}
+	
+	// 特殊的，批量插入，更新数据
+	@Test
+	void testBulkRequest() throws IOException {
+		// 批量插入请求
+		BulkRequest bulkRequest = new BulkRequest();
+		bulkRequest.timeout("10s");
+
+		// 数据
+		ArrayList<User> users = new ArrayList<>();
+		users.add(new User("kindred",1500));
+		users.add(new User("Gnar",9));
+		users.add(new User("neeko",16));
+		users.add(new User("qsj",23));
+
+		// for循环 批量插入,更新
+		for (int i = 0; i < users.size(); i++) {
+			bulkRequest.add(
+					new IndexRequest("mildlamb_index")
+					.id(""+(i+1))
+					.source(new ObjectMapper().writeValueAsString(users.get(i)),XContentType.JSON)
+			);
+		}
+
+		// 执行批量插入请求
+		BulkResponse bulk = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+		System.out.println(bulk.hasFailures());
+		client.close();
+	}
+	
+	
+	// 查询
+	// SearchRequest 搜索请求
+	// SearchSourceBuilder 搜索条件构造，比如分页，超时时间，高亮等等
+	// QueryBuilders 搜索工具类，比如精确查询，匹配查询，布尔查询等等
+	@Test
+	void testSearch() throws IOException {
+		// 搜索哪个索引
+		SearchRequest searchRequest = new SearchRequest("mildlamb_index");
+
+		// 构建搜索条件
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+		// 查询条件，可以使用QueryBuilders工具类实现
+		// termQuery 精确匹配， 不拆分 查询关键词
+		TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("name.keyword", "kindred");
+		searchSourceBuilder.query(termQueryBuilder);
+		// 设置分页
+		searchSourceBuilder.from(0).size(2);
+		// 设置超时时间
+		searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+
+		// 把搜索条件放入搜索请求中
+		searchRequest.source(searchSourceBuilder);
+		// 客户端执行搜索请求
+		SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+		// 查询出来的结果
+		System.out.println(new ObjectMapper().writeValueAsString(searchResponse.getHits()));
+		System.out.println("=================================");
+		for (SearchHit hit : searchResponse.getHits().getHits()) {
+			System.out.println(hit.getSourceAsMap());
+		}
 		client.close();
 	}
 ```
