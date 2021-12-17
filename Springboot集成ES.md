@@ -83,3 +83,17 @@ class EsApiApplicationTests {
 	}
 }
 ```
+
+# 文档操作的API
+- 创建一个实体类
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Component
+public class User {
+    private String name;
+    private int age;
+}
+```
+- 
