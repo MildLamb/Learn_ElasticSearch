@@ -4,13 +4,14 @@
 ```java
 public class HtmlParseUtil {
     public static void main(String[] args) throws IOException {
-        new HtmlParseUtil().parseJD("java").forEach(System.out::println);
+        new HtmlParseUtil().parseJD("明天").forEach(System.out::println);
     }
 
     public List<Content> parseJD(String keywords) throws IOException{
         // 获取请求 https://search.jd.com/Search?keyword=JAVA
         // 前提 需要联网
-        String url = "https://search.jd.com/Search?keyword=" + keywords;
+        // jsoup 高版本可以url可以直接传中文了，低版本的话，可以在请求的url中添加  &enc=utf-8
+        String url = "https://search.jd.com/Search?keyword=" + keywords + "&enc=utf-8";
         // 解析网页 (Jsoup返回Document就是Document对象)
         Document document = Jsoup.parse(new URL(url), 30000);
         // 所有你在js中可以使用的方法，这里都能用
