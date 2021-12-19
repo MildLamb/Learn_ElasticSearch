@@ -51,3 +51,75 @@ public class Content {
     //可以自己添加属性
 }
 ```
+
+# 将搜索的数据存入ES中，并提供搜索的方法
+```java
+@Service
+public class ContentService {
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+
+    // 1.解析数据放入es索引中
+    public Boolean parseContent(String keywords) throws IOException {
+        List<Content> contents = new HtmlParseUtil().parseJD(keywords);
+        // 把获取的数据批量放入es中，用bulk
+        BulkRequest bulkRequest = new BulkRequest();
+        bulkRequest.timeout("1m");
+        for (int i = 0; i < contents.size(); i++) {
+            System.out.println(new ObjectMapper().writeValueAsString(contents.get(i)));
+            bulkRequest.add(new IndexRequest("jd_goods").id(""+(i+1))
+                .source(new ObjectMapper().writeValueAsString(contents.get(i)), XContentType.JSON));
+        }
+        BulkResponse bulk = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+        return !bulk.hasFailures();
+    }
+
+    // 2.获取数据实现搜索功能
+    public List<Map<String,Object>> searchPage(String keyword,int pageNo,int pageSize) throws IOException {
+        if (pageNo <= 1){
+            pageNo = 1;
+        }
+
+        // 条件搜索
+        SearchRequest searchRequest = new SearchRequest("jd_goods");
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+        // 分页
+        sourceBuilder.from(pageNo);
+        sourceBuilder.size(pageSize);
+
+        // 精准匹配
+//        TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("title", keyword);
+        MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("title", keyword);
+        sourceBuilder.query(matchQueryBuilder);
+        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+
+        // 执行搜索
+        searchRequest.source(sourceBuilder);
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+
+        // 解析查询结果
+        ArrayList<Map<String,Object>> list = new ArrayList<>();
+        for (SearchHit hit : searchResponse.getHits().getHits()) {
+            list.add(hit.getSourceAsMap());
+        }
+
+        return list;
+    }
+}
+```
+
+# 控制层提供调用接口
+```java
+    @GetMapping("/parse/{keyword}")
+    @ResponseBody
+    public Boolean parse(@PathVariable("keyword") String word) throws IOException {
+        return contentService.parseContent(word);
+    }
+
+    @GetMapping("/search/{pageNo}/{pageSize}/{keyword}")
+    @ResponseBody
+    public List<Map<String,Object>> search(@PathVariable("pageNo") int pno,@PathVariable("pageSize") int psize,@PathVariable("keyword") String word) throws IOException {
+        return contentService.searchPage(word,pno,psize);
+    }
+```
